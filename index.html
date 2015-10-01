@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="myApp">
+
+<head>
+    <title>eCampaign</title>
+    <script src="angular.js"></script>
+    <script src="angular-animate.js"></script>
+    <script src="angular-touch.js"></script>
+    <script src="ui-grid.min.js"></script>
+    <link rel=stylesheet href="ui-grid.min.css">
+    <link rel=stylesheet href="bootstrap.min.css" type="text/css">
+
+    <script>
+        var app = angular.module('myApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.pinning']);
+        app.controller('MyCtrl', ['$scope', '$http', 'uiGridConstants', '$timeout', function ($scope, $http, uiGridConstants, $timeout) {
+                $scope.gridOptions = {
+                    enableColumnResizing: true,
+                    enableGroupHeaderSelection: true,
+                    treeRowHeaderAlwaysVisible: true,
+                    onRegisterApi: function (gridApi) {
+                        $scope.gridApi = gridApi;
+
+                    },
+                    enableFiltering: true,
+                    rowHeight: 30,
+                    columnDefs: [
+                        {
+                            displayName: 'First Name',
+                            name: 'firstName',
+                            width: '12%',
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader,
+                            pinnedLeft: false
+                        },
+                        {
+                            displayName: 'Middle Name',
+                            name: 'middleName',
+                            width: '12%',
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader,
+                            pinnedLeft: false
+                        },
+                        {
+                            displayName: 'Last Name',
+                            name: 'lastName',
+                            width: '12%',
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader,
+                            pinnedLeft: false
+                        },
+                        {
+                            displayName: 'Gender',
+                            name: 'gender',
+                            width: 100,
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        },
+                        /*{
+                            displayName: 'Age',
+                            name: 'age',
+                            width: 75,
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        },*/
+                        {
+                            displayName: 'Caste',
+                            name: 'caste',
+                            width: 100,
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        },
+                        {
+                            displayName: 'Area',
+                            name: 'area',
+                            width: 250,
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        },
+                        {
+                            displayName: 'Refrence',
+                            name: 'refrence',
+                            width: 250,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        },
+                        {
+                            displayName: 'Phone',
+                            name: 'phone',
+                            width: 250,
+                            headerCellClass: $scope.highlightFilteredHeader
+                        }
+                     ],
+                };
+
+
+                $scope.highlightFilteredHeader = function (row, rowRenderIndex, col, colRenderIndex) {
+
+                    if (col.filters[0].term) {
+                        return 'header-filtered';
+                    } else {
+                        return '';
+                    }
+                };
+
+                $scope.checkBool = function (val) {
+                    if (val != null) {
+                        var cameAs = val.substring(0, 1);
+                        if (cameAs == "1")
+                            return "Male";
+                        else
+                            return "Female";
+                    }
+                }
+
+                $timeout(function () {
+                    $http.get('http://petrohelp.hemantsavkar.in/api/voter')
+                        .success(function (data) {
+                            $scope.gridOptions = {
+                                data: data
+                            };
+                            $scope.height = (($scope.gridOptions.data.length * 30) + 140);
+                            var extra = 10;
+                            if (extra) {
+                                $scope.height += extra;
+                            }
+
+                            $scope.gridApi.grid.gridHeight = $scope.height;
+                            $timeout(function () {
+                                var el = document.getElementById("loadingDiv");
+                                if (el) {
+                                    el.hidden = true;
+
+                                    var el = document.getElementById("grdData");
+                                    el.hidden = false;
+                                }
+                            }, 2000);
+
+                        });
+
+
+
+                }, 1000);
+        }])
+            .filter('mapGender', function () {
+                var genderHash = {
+                    '1': 'Male',
+                    '2': 'Female'
+                };
+
+                return function (input) {
+                    if (!input) {
+                        return '';
+                    } else {
+                        return genderHash[input];
+                    }
+                };
+            });
+    </script>
+    <style>
+        .gridStyle {
+            border: 1px solid rgb(212, 212, 212);
+        }
+        
+        .header-filtered {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body ng-controller="MyCtrl">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Malegaon Bk Gram Panchayat General Elections 2015
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <span class="pull-left">Exclusive Use Only For :- <strong>Yuvraj Taware</strong></span>
+
+                <span class="pull-right">Technical Support :- <strong>Hemant Savkar</strong></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <span style="color:Red;font-size:24px" class="text-center" id="loadingDiv">Loading..........</span>
+                <div id="grdData" hidden class="gridStyle pull-left" ui-grid="gridOptions" ui-grid-grouping class="grid" ui-grid-auto-resize ui-grid-pinning ng-style="{ 'height': height }">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
