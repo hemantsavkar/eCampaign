@@ -24,6 +24,22 @@
                     enableFiltering: true,
                     rowHeight: 30,
                     columnDefs: [
+                         {
+                            displayName: 'Sr. No',
+                            name: 'srNo',
+                            width: '6%',
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader,
+                            pinnedLeft: false
+                        },
+                        {
+                            displayName: 'Last Name',
+                            name: 'lastName',
+                            width: '12%',
+                            enableHiding: false,
+                            headerCellClass: $scope.highlightFilteredHeader,
+                            pinnedLeft: false
+                        },
                         {
                             displayName: 'First Name',
                             name: 'firstName',
@@ -40,18 +56,11 @@
                             headerCellClass: $scope.highlightFilteredHeader,
                             pinnedLeft: false
                         },
-                        {
-                            displayName: 'Last Name',
-                            name: 'lastName',
-                            width: '12%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader,
-                            pinnedLeft: false
-                        },
+                        
                         {
                             displayName: 'Gender',
                             name: 'gender',
-                            width: 100,
+                            width: '8%',
                             enableHiding: false,
                             headerCellClass: $scope.highlightFilteredHeader
                         },
@@ -65,27 +74,27 @@
                         {
                             displayName: 'Caste',
                             name: 'caste',
-                            width: 100,
+                            width: '8%',
                             enableHiding: false,
                             headerCellClass: $scope.highlightFilteredHeader
                         },
                         {
                             displayName: 'Area',
                             name: 'area',
-                            width: 250,
+                            width: '13%',
                             enableHiding: false,
                             headerCellClass: $scope.highlightFilteredHeader
                         },
                         {
                             displayName: 'Refrence',
                             name: 'refrence',
-                            width: 250,
+                             width: '13%',
                             headerCellClass: $scope.highlightFilteredHeader
                         },
                         {
                             displayName: 'Phone',
                             name: 'phone',
-                            width: 250,
+                             
                             headerCellClass: $scope.highlightFilteredHeader
                         }
                      ],
@@ -158,6 +167,7 @@
     <style>
         .gridStyle {
             border: 1px solid rgb(212, 212, 212);
+            width: 1200px
         }
         
         .header-filtered {
