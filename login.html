@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="myApp">
+
+<head>
+    <title>eCampaign</title>
+    <meta name="google-signin-client_id" content="30995469184-6vig33dfguju210he45vd7jn1bl93dq8.apps.googleusercontent.com">
+    <!--<link rel=stylesheet href="bootstrap.min.css" type="text/css">-->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800' rel='stylesheet' type='text/css'>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <style>
+        h1 {
+            font-family: ‘Metrophobic’, Arial, serif;
+            font-weight: 800;
+            font-size: 45px
+        }
+        
+        .vcenter {
+            display: inline-block;
+            vertical-align: middle;
+            float: none;
+        }
+    </style>
+    <script>
+        function onSignIn(googleUser) {
+            /* var profile = googleUser.getBasicProfile();
+             console.log('ID: ' + profile.getId()); 
+             console.log('Name: ' + profile.getName());
+             console.log('Image URL: ' + profile.getImageUrl());
+             console.log('Email: ' + profile.getEmail());
+
+             if (profile != null || profile != undefined) {
+                 window.location.replace("index.html?token");
+             }*/
+
+        }
+
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
+        }
+
+        function login() {
+            
+                gapi.load('auth2', function () {
+                auth2 = gapi.auth2.init({
+                    client_id: '30995469184-6vig33dfguju210he45vd7jn1bl93dq8.apps.googleusercontent.com',
+                    fetch_basic_profile: true,
+                    scope: 'profile'
+                });
+                // Sign the user in, and then retrieve their ID.
+                
+                auth2.signIn().then(function () {
+                    var profile = auth2.currentUser.get().getBasicProfile();
+                    if (profile != null || profile != undefined) {
+                        var userProfile = {
+                            ID: profile.getId(),
+                            Name: profile.getName(),
+                            Image_URL: profile.getImageUrl(),
+                            Email: profile.getEmail()
+                        }
+                        window.userProfile = userProfile;
+                    }
+                });
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+    <!--  <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '393960937470221',
+                xfbml: true,
+                version: 'v2.5'
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        function checkLoginState() {
+            FB.getLoginStatus(function (response) {
+                if (response.status == "connected") {
+                    FB.api('/me?email', function (response) {
+                        console.log(JSON.stringify(response));
+                    });
+                }
+            });
+        }
+
+        function logInUer() {
+
+            FB.login(function (response) {
+                 if (response.status == "connected") {
+                     console.log(JSON.stringify(response));
+                     
+                    FB.api('/me', function (response) {
+                        console.log(JSON.stringify(response));
+                    });
+                }
+            }, {
+                scope: 'basic_info,email,public_profile',
+                return_scopes: true
+            });
+        }
+    </script>
+-->
+
+    <div class="container" style="padding-top:40px;background-image: url(mic.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;color:white" ng-controller="LoginCtrl" ng-if="userAuthenticated==false">
+
+        <div class="row" style="padding-top:140px">
+            <div class="col-md-4 text-center col-md-offset-4">
+                <h1>eCampaign</h1><strong>One Stop Campaign Solution !!!!</strong>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-3 text-right col-md-offset-3">
+                <button class="btn btn-primary btn-lg" onClick="login()"> <i class="fa fa-google fa-1x"></i>&nbsp;&nbsp; Sign in with Google</button>
+            </div>
+            <div class="col-md-3 text-right">
+
+                <button class="btn btn-primary btn-lg" ng-click="authenticate('facebook')"><i class="fa fa-facebook fa-1x"></i>&nbsp;&nbsp; Sign in with Facebook</button>
+
+            </div>
+        </div>
+        <br/>
+        <div class="row"></div>
+        <div class="row"></div>
+        <br/>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-9 text-right col-md-offset-3">
+                Developed and Maindatined By :- <strong>Yuvraj Ashokrao Tawre</strong>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+    </div>
+</body>
+
+</html>

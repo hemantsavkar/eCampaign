@@ -3,66 +3,112 @@
 
 <head>
     <title>eCampaign</title>
+    <meta name="google-signin-client_id" content="30995469184-6vig33dfguju210he45vd7jn1bl93dq8.apps.googleusercontent.com">
     <script src="angular.js"></script>
     <script src="angular-animate.js"></script>
     <script src="angular-touch.js"></script>
     <script src="ui-grid.min.js"></script>
     <link rel=stylesheet href="ui-grid.min.css">
     <link rel=stylesheet href="bootstrap.min.css" type="text/css">
+    <script src="https://apis.google.com/js/platform.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800' rel='stylesheet' type='text/css'>
+    <script src="pdfmake.min.js"></script>
+    <script src="vfs_fonts.js"></script>
 
+    <style>
+        h1 {
+            font-family: ‘Metrophobic’, Arial, serif;
+            font-weight: 800;
+            font-size: 53px
+        }
+    </style>
     <script>
-        var app = angular.module('myApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.pinning']);
-        app.controller('MyCtrl', ['$scope', '$http', 'uiGridConstants', '$timeout', function ($scope, $http, uiGridConstants, $timeout) {
-                $scope.gridOptions = {
-                    enableColumnResizing: true,
-                    enableGroupHeaderSelection: true,
-                    treeRowHeaderAlwaysVisible: true,
-                    onRegisterApi: function (gridApi) {
-                        $scope.gridApi = gridApi;
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '393960937470221',
+                xfbml: true,
+                version: 'v2.5'
+            });
+        };
 
-                    },
-                    enableFiltering: true,
-                    rowHeight: 30,
-                    columnDefs: [
-                         {
-                            displayName: 'Sr. No',
-                            name: 'srNo',
-                            width: '6%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader,
-                            pinnedLeft: false
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        function checkLoginState() {
+            FB.getLoginStatus(function (response) {
+                if (response.status == "connected") {
+                    FB.api('/me?email', function (response) {
+                        console.log(JSON.stringify(response));
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        var app = angular.module('myApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.pinning', 'ui.grid.selection', 'ui.grid.exporter']);
+
+        app.run(function ($rootScope) {
+            $rootScope.userAuthenticated = false;
+
+            $rootScope.highlightFilteredHeader = function (row, rowRenderIndex, col, colRenderIndex) {
+
+                if (col.filters[0].term) {
+                    return 'header-filtered';
+                } else {
+                    return '';
+                }
+            };
+
+            $rootScope.gridOptions = {
+                columnDefs: [
+                    {
+                        displayName: 'Sr. No',
+                        name: 'srNo',
+                        width: '6%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader,
+                        pinnedLeft: false
                         },
-                        {
-                            displayName: 'Last Name',
-                            name: 'lastName',
-                            width: '12%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader,
-                            pinnedLeft: false
+                    {
+                        displayName: 'Last Name',
+                        name: 'lastName',
+                        width: '12%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader,
+                        pinnedLeft: false
                         },
-                        {
-                            displayName: 'First Name',
-                            name: 'firstName',
-                            width: '12%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader,
-                            pinnedLeft: false
+                    {
+                        displayName: 'First Name',
+                        name: 'firstName',
+                        width: '12%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader,
+                        pinnedLeft: false
                         },
-                        {
-                            displayName: 'Middle Name',
-                            name: 'middleName',
-                            width: '12%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader,
-                            pinnedLeft: false
+                    {
+                        displayName: 'Middle Name',
+                        name: 'middleName',
+                        width: '12%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader,
+                        pinnedLeft: false
                         },
-                        
-                        {
-                            displayName: 'Gender',
-                            name: 'gender',
-                            width: '8%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader
+
+                    {
+                        displayName: 'Gender',
+                        name: 'gender',
+                        width: '8%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader
                         },
                         /*{
                             displayName: 'Age',
@@ -71,44 +117,174 @@
                             enableHiding: false,
                             headerCellClass: $scope.highlightFilteredHeader
                         },*/
-                        {
-                            displayName: 'Caste',
-                            name: 'caste',
-                            width: '8%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader
+                    {
+                        displayName: 'Caste',
+                        name: 'caste',
+                        width: '8%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader
                         },
-                        {
-                            displayName: 'Area',
-                            name: 'area',
-                            width: '13%',
-                            enableHiding: false,
-                            headerCellClass: $scope.highlightFilteredHeader
+                    {
+                        displayName: 'Area',
+                        name: 'area',
+                        width: '13%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader
                         },
-                        {
-                            displayName: 'Refrence',
-                            name: 'refrence',
-                             width: '13%',
-                            headerCellClass: $scope.highlightFilteredHeader
+                    {
+                        displayName: 'Refrence',
+                        name: 'refrence',
+                        width: '13%',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader
                         },
-                        {
-                            displayName: 'Phone',
-                            name: 'phone',
-                             
-                            headerCellClass: $scope.highlightFilteredHeader
+                    {
+                        displayName: 'Phone',
+                        name: 'phone',
+                        enableHiding: false,
+                        headerCellClass: $rootScope.highlightFilteredHeader
                         }
                      ],
-                };
+                enableColumnResizing: true,
+                enableGroupHeaderSelection: true,
+                treeRowHeaderAlwaysVisible: true,
+                onRegisterApi: function (gridApi) {
+                    $rootScope.gridApi = gridApi;
+                },
+                enableFiltering: true,
+                enableGridMenu: true,
+                enableSelectAll: true,
+                exporterCsvFilename: 'myFile.csv',
+                exporterPdfDefaultStyle: {
+                    fontSize: 9
+                },
+                exporterPdfTableStyle: {
+                    margin: [0, 0, 0, 0]
+                },
+                exporterPdfTableHeaderStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    italics: true,
+                    color: 'red'
+                },
+                exporterPdfHeader: {
+                    text: 'eCampaign',
+                    style: 'headerStyle'
+                },
+                exporterPdfFooter: function (currentPage, pageCount) {
+                    return {
+                        text: currentPage.toString() + ' of ' + pageCount.toString(),
+                        style: 'footerStyle'
+                    };
+                },
+                exporterPdfCustomFormatter: function (docDefinition) {
+                    docDefinition.styles.headerStyle = {
+                        fontSize: 22,
+                        bold: true
+                    };
+                    docDefinition.styles.footerStyle = {
+                        fontSize: 10,
+                        bold: true
+                    };
+                    return docDefinition;
+                },
+                exporterPdfOrientation: 'landscape',
+                exporterPdfPageSize: 'LETTER',
+                exporterPdfMaxGridWidth: 500,
+                exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+                rowHeight: 30
+
+            };
+        });
 
 
-                $scope.highlightFilteredHeader = function (row, rowRenderIndex, col, colRenderIndex) {
+        app.controller('MyCtrl', ['$scope', '$http', 'uiGridConstants', '$timeout', '$rootScope', function ($scope, $http, uiGridConstants, $timeout, $rootScope) {
 
-                    if (col.filters[0].term) {
-                        return 'header-filtered';
-                    } else {
-                        return '';
+
+                $scope.authenticate = function (provider) {
+
+                    if (provider == 'google') {
+                        gapi.load('auth2', function () {
+                            auth2 = gapi.auth2.init({
+                                client_id: '30995469184-6vig33dfguju210he45vd7jn1bl93dq8.apps.googleusercontent.com',
+                                fetch_basic_profile: true,
+                                scope: 'profile'
+                            });
+                            // Sign the user in, and then retrieve their ID.
+
+                            auth2.signIn().then(function () {
+                                var profile = auth2.currentUser.get().getBasicProfile();
+                                if (profile != null || profile != undefined) {
+                                    $rootScope.userProfile = {
+                                        ID: profile.getId(),
+                                        Name: profile.getName(),
+                                        Image_URL: profile.getImageUrl(),
+                                        Email: profile.getEmail()
+                                    }
+
+                                    $scope.$broadcast("userAuthenticatedDone");
+                                }
+                            });
+                        });
+                    } else if (provider == 'facebook') {
+
+                        FB.login(function (response) {
+                            if (response.status == "connected") {
+                                FB.api('/me', function (response12) {
+                                    console.log(JSON.stringify(response12));
+                                    $rootScope.userProfile = {
+                                        ID: response12.id,
+                                        Name: response12.name
+                                    }
+                                });
+
+                                $scope.$broadcast("userAuthenticatedDone");
+                            }
+                        }, {
+                            scope: 'basic_info,email,public_profile',
+                            return_scopes: true
+                        });
+
                     }
-                };
+                }
+
+
+                $scope.$on("userAuthenticatedDone", function () {
+                    $rootScope.userAuthenticated = true;
+                    $timeout(function () {
+                        $http.get('http://petrohelp.hemantsavkar.in/api/voter')
+                            .success(function (data) {
+                                $rootScope.gridOptions = {
+                                    data: data
+                                };
+                                $scope.height = (($rootScope.gridOptions.data.length * 30) + 140);
+                                var extra = 10;
+                                if (extra) {
+                                    $scope.height += extra;
+                                }
+
+                                $rootScope.gridApi.grid.gridHeight = $scope.height;
+
+                                $timeout(function () {
+                                    var el = document.getElementById("loadingDiv");
+                                    if (el) {
+                                        el.hidden = true;
+                                        var el = document.getElementById("grdData");
+                                        el.hidden = false;
+                                    }
+                                });
+
+                            });
+
+                    }, 1000);
+
+                })
+
+
+
+
+
+
 
                 $scope.checkBool = function (val) {
                     if (val != null) {
@@ -120,35 +296,8 @@
                     }
                 }
 
-                $timeout(function () {
-                    $http.get('http://petrohelp.hemantsavkar.in/api/voter')
-                        .success(function (data) {
-                            $scope.gridOptions = {
-                                data: data
-                            };
-                            $scope.height = (($scope.gridOptions.data.length * 30) + 140);
-                            var extra = 10;
-                            if (extra) {
-                                $scope.height += extra;
-                            }
 
-                            $scope.gridApi.grid.gridHeight = $scope.height;
-                            $timeout(function () {
-                                var el = document.getElementById("loadingDiv");
-                                if (el) {
-                                    el.hidden = true;
-
-                                    var el = document.getElementById("grdData");
-                                    el.hidden = false;
-                                }
-                            }, 2000);
-
-                        });
-
-
-
-                }, 1000);
-        }])
+                    }])
             .filter('mapGender', function () {
                 var genderHash = {
                     '1': 'Male',
@@ -177,25 +326,70 @@
 </head>
 
 <body ng-controller="MyCtrl">
-    <div class="container">
+
+    <div class="container" style="padding-top:40px;background-image: url(mic.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;color:white" ng-if="userAuthenticated==false">
+
+        <div class="row" style="padding-top:140px">
+            <div class="col-md-4 text-center col-md-offset-4">
+                <h1>eCampaign</h1><strong>One Stop Campaign Solution !!!!</strong>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-3 text-right col-md-offset-3">
+                <button class="btn btn-primary btn-lg" ng-click="authenticate('google')"> <i class="fa fa-google fa-1x"></i>&nbsp;&nbsp; Sign in with Google</button>
+            </div>
+            <div class="col-md-3 text-right">
+
+                <button class="btn btn-primary btn-lg" ng-click="authenticate('facebook')"><i class="fa fa-facebook fa-1x"></i>&nbsp;&nbsp; Sign in with Facebook</button>
+
+            </div>
+        </div>
+        <br/>
+        <div class="row"></div>
+        <div class="row"></div>
+        <br/>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-9 text-right col-md-offset-3">
+                Developed and Maindatined By :- <strong>Yuvraj Ashokrao Tawre</strong>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+    </div>
+
+    <div class="container" ng-if="userAuthenticated==true">
         <div class="row">
             <div class="col-md-12 text-center">
-                <h1>Malegaon Bk Gram Panchayat General Elections 2015
-                </h1>
+                <h1>eCampaign                </h1>
+                <div class="g-signin2" data-onsuccess="onSignIn" hidden="true"></div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <span class="pull-left">Exclusive Use Only For :- <strong>Yuvraj Taware</strong></span>
 
-                <span class="pull-right">Technical Support :- <strong>Hemant Savkar</strong></span>
+                <span class="pull-right">Wel Come :- <strong>{{userProfile.Name}}</strong></span>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-md-12">
                 <span style="color:Red;font-size:24px" class="text-center" id="loadingDiv">Loading..........</span>
-                <div id="grdData" hidden class="gridStyle pull-left" ui-grid="gridOptions" ui-grid-grouping class="grid" ui-grid-auto-resize ui-grid-pinning ng-style="{ 'height': height }">
+                <div id="grdData" hidden class="gridStyle pull-left" ui-grid="gridOptions" ui-grid-grouping class="grid" ui-grid-auto-resize ui-grid-pinning ui-grid-exporter ng-style="{ 'height': height }">
                 </div>
             </div>
         </div>
