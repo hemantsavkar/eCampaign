@@ -54,7 +54,7 @@
         }
     </script>
     <script>
-        var app = angular.module('myApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.pinning', 'ui.grid.selection', 'ui.grid.exporter']);
+        var app = angular.module('myApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.pinning', 'ui.grid.selection', 'ui.grid.exporter', 'ui.grid.pagination']);
 
         app.run(function ($rootScope) {
             $rootScope.userAuthenticated = false;
@@ -145,6 +145,8 @@
                         headerCellClass: $rootScope.highlightFilteredHeader
                         }
                      ],
+                //paginationPageSizes: [25, 50, 75],
+                paginationPageSize: 25,
                 enableColumnResizing: true,
                 enableGroupHeaderSelection: true,
                 treeRowHeaderAlwaysVisible: true,
@@ -195,11 +197,11 @@
                 rowHeight: 30
 
             };
+
         });
 
 
         app.controller('MyCtrl', ['$scope', '$http', 'uiGridConstants', '$timeout', '$rootScope', function ($scope, $http, uiGridConstants, $timeout, $rootScope) {
-
 
                 $scope.authenticate = function (provider) {
 
@@ -222,7 +224,7 @@
                                         Email: profile.getEmail()
                                     }
 
-                                    $scope.$broadcast("userAuthenticatedDone");
+                                    $rootScope.$broadcast("userAuthenticatedDone");
                                 }
                             });
                         });
@@ -238,7 +240,7 @@
                                     }
                                 });
 
-                                $scope.$broadcast("userAuthenticatedDone");
+                                $rootScope.$broadcast("userAuthenticatedDone");
                             }
                         }, {
                             scope: 'basic_info,email,public_profile',
@@ -247,9 +249,7 @@
 
                     }
                 }
-
-
-                $scope.$on("userAuthenticatedDone", function () {
+                $rootScope.$on("userAuthenticatedDone", function () {
                     $rootScope.userAuthenticated = true;
                     $timeout(function () {
                         $http.get('http://petrohelp.hemantsavkar.in/api/voter')
@@ -257,7 +257,7 @@
                                 $rootScope.gridOptions = {
                                     data: data
                                 };
-                                $scope.height = (($rootScope.gridOptions.data.length * 30) + 140);
+                                $scope.height = ((25 * 30) + 190);
                                 var extra = 10;
                                 if (extra) {
                                     $scope.height += extra;
@@ -279,12 +279,6 @@
                     }, 1000);
 
                 })
-
-
-
-
-
-
 
                 $scope.checkBool = function (val) {
                     if (val != null) {
@@ -389,7 +383,7 @@
         <div class="row">
             <div class="col-md-12">
                 <span style="color:Red;font-size:24px" class="text-center" id="loadingDiv">Loading..........</span>
-                <div id="grdData" hidden class="gridStyle pull-left" ui-grid="gridOptions" ui-grid-grouping class="grid" ui-grid-auto-resize ui-grid-pinning ui-grid-exporter ng-style="{ 'height': height }">
+                <div id="grdData" hidden class="gridStyle pull-left" ui-grid="gridOptions" ui-grid-grouping class="grid" ui-grid-auto-resize ui-grid-pinning ui-grid-exporter ui-grid-pagination ng-style="{ 'height': height }">
                 </div>
             </div>
         </div>
